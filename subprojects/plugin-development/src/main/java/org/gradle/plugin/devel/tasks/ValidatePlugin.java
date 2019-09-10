@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.UncheckedIOException;
@@ -30,7 +31,6 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.EmptyFileVisitor;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.internal.DocumentationRegistry;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.CacheableTask;
@@ -65,10 +65,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Validates task property annotations.
+ * Validates plugins by checking property annotations on work items like tasks and artifact transforms.
  *
  * <p>
- *     Task properties must be annotated with one of:
+ *     Properties must be annotated with one of:
  * </p>
  *
  * <ul>
@@ -81,30 +81,32 @@ import java.util.stream.Collectors;
  *                 {@literal @}{@link org.gradle.api.tasks.InputFile},
  *                 {@literal @}{@link org.gradle.api.tasks.InputDirectory},
  *                 {@literal @}{@link org.gradle.api.tasks.InputFiles}
- *                 to mark it as an input to the task.
+ *                 to mark it as an input.
  *             </li>
  *             <li>
  *                 {@literal @}{@link org.gradle.api.tasks.OutputFile},
- *                 {@literal @}{@link org.gradle.api.tasks.OutputDirectory}
- *                 to mark it as an output of the task.
+ *                 {@literal @}{@link org.gradle.api.tasks.OutputFiles},
+ *                 {@literal @}{@link org.gradle.api.tasks.OutputDirectory},
+ *                 {@literal @}{@link org.gradle.api.tasks.OutputDirectories}
+ *                 to mark it as an output.
  *             </li>
  *         </ul>
  *    </li>
  *    <li>
  *         <b>Properties ignored during up-to-date checks:</b>
  *         <ul>
- *             <li>{@literal @}{@link javax.inject.Inject} marks a Gradle service used by the task.</li>
- *             <li>{@literal @}{@link org.gradle.api.tasks.Console Console} marks a property that only influences the console output of the task.</li>
- *             <li>{@literal @}{@link org.gradle.api.tasks.Internal Internal} mark an internal property of the task.</li>
+ *             <li>{@literal @}{@link javax.inject.Inject} marks an injected Gradle service.</li>
+ *             <li>{@literal @}{@link org.gradle.api.tasks.Console Console} marks a property that only influences console output.</li>
+ *             <li>{@literal @}{@link org.gradle.api.tasks.Internal Internal} mark an internal property.</li>
  *             <li>{@literal @}{@link org.gradle.api.model.ReplacedBy ReplacedBy} mark a property as replaced by another (similar to {@code Internal}).</li>
  *         </ul>
  *     </li>
  * </ul>
  *
- * @since 3.0
+ * @since 6.0
  */
 @CacheableTask
-public class ValidateTaskProperties extends ConventionTask implements VerificationTask {
+public class ValidatePlugin extends DefaultTask implements VerificationTask {
     private final ConfigurableFileCollection classes;
     private final ConfigurableFileCollection classpath;
     private final RegularFileProperty outputFile;
@@ -113,7 +115,7 @@ public class ValidateTaskProperties extends ConventionTask implements Verificati
     private boolean failOnWarning = true;
 
     @Inject
-    public ValidateTaskProperties(ObjectFactory objects) {
+    public ValidatePlugin(ObjectFactory objects) {
         this.classes = objects.fileCollection();
         this.classpath = objects.fileCollection();
         this.outputFile = objects.fileProperty();

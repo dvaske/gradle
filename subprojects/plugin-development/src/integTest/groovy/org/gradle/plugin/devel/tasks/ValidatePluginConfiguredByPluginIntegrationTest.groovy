@@ -18,7 +18,7 @@ package org.gradle.plugin.devel.tasks
 
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 
-class ValidateTaskPropertiesConfiguredByPluginIntegrationTest extends AbstractIntegrationSpec {
+class ValidatePluginConfiguredByPluginIntegrationTest extends AbstractIntegrationSpec {
 
     def setup() {
         buildFile << """
@@ -28,7 +28,7 @@ class ValidateTaskPropertiesConfiguredByPluginIntegrationTest extends AbstractIn
 
     def "detects missing annotations on Java properties"() {
         buildFile << """
-            validateTaskProperties {
+            validatePlugins {
                 failOnWarning = true
             }
         """
@@ -114,7 +114,7 @@ class ValidateTaskPropertiesConfiguredByPluginIntegrationTest extends AbstractIn
         failure.assertHasCause "Warning: Type 'com.example.MyTask': property 'options.badNested' is not annotated with an input or output annotation."
         failure.assertHasCause "Warning: Type 'com.example.MyTask': property 'ter' is not annotated with an input or output annotation."
 
-        file("build/reports/task-properties/report.txt").text == """
+        file("build/reports/plugin-development/validation-report.txt").text == """
             Warning: Type 'com.example.MyTask': property 'badTime' is not annotated with an input or output annotation.
             Warning: Type 'com.example.MyTask': property 'options.badNested' is not annotated with an input or output annotation.
             Warning: Type 'com.example.MyTask': property 'ter' is not annotated with an input or output annotation.
