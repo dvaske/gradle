@@ -40,6 +40,9 @@ class NestedInputKotlinImplementationTrackingIntegrationTest extends AbstractPlu
         """
 
         buildFile.makeOlder()
+        executer.beforeExecute {
+            expectDeprecationWarning()
+        }
 
         when:
         run 'myTask'
@@ -73,6 +76,9 @@ class NestedInputKotlinImplementationTrackingIntegrationTest extends AbstractPlu
         """
 
         buildFile.makeOlder()
+        executer.beforeExecute {
+            expectDeprecationWarning()
+        }
 
         when:
         run 'myTask'
