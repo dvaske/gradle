@@ -96,9 +96,8 @@ abstract class AbstractRecompilationSpecProvider implements RecompilationSpecPro
     }
 
     protected void includePreviousCompilationOutputOnClasspath(JavaCompileSpec spec) {
-        List<File> classpath = Lists.newArrayList(spec.getCompileClasspath());
-        File destinationDir = spec.getDestinationDir();
-        classpath.add(destinationDir);
+        List<File> classpath = Lists.newArrayList(spec.getDestinationDir());
+        classpath.addAll(spec.getCompileClasspath());
         spec.setCompileClasspath(classpath);
     }
 }
