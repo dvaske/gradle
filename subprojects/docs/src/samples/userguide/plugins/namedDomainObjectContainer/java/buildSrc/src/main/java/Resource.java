@@ -10,6 +10,10 @@ public class Resource {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public URI getUri() {
         return uri;
     }
