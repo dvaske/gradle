@@ -1,1 +1,3 @@
-task download(type: Download)
+task download(type: Download) {
+    outputDirectory = file("out.zip")
+}
