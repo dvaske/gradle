@@ -10,6 +10,6 @@ class DownloadExtension {
     @Inject
     DownloadExtension(ObjectFactory objectFactory) {
         // Use an injected ObjectFactory to create a container
-        resources = objectFactory.domainObjectContainer(Server)
+        resources = objectFactory.domainObjectContainer(Resource)
     }
 }
