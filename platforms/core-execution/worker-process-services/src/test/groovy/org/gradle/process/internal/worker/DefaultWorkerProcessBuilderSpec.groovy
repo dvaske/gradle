@@ -107,4 +107,18 @@ class DefaultWorkerProcessBuilderSpec extends Specification {
         and:
         1 * memoryManager.requestFreeMemory(1024*1024*1024)
     }
+
+    def "implementation classpath can be read back and extended"() {
+        expect:
+        builder.getImplementationClasspath() == null
+
+        when:
+        def gradleEntry = new URL("file:/gradle-worker.jar")
+        def additionalEntry = new URL("file:/additional-worker.jar")
+        builder.setImplementationClasspath([gradleEntry])
+        builder.setImplementationClasspath(builder.getImplementationClasspath() + additionalEntry)
+
+        then:
+        builder.getImplementationClasspath() == [gradleEntry, additionalEntry]
+    }
 }

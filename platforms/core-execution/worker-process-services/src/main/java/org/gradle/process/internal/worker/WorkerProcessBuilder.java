@@ -19,6 +19,7 @@ package org.gradle.process.internal.worker;
 import org.gradle.api.Action;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.internal.nativeintegration.services.NativeServices.NativeServicesMode;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.net.URL;
@@ -55,6 +56,17 @@ public interface WorkerProcessBuilder extends WorkerProcessSettings {
     Action<? super WorkerProcessContext> getWorker();
 
     void setImplementationClasspath(List<URL> implementationClasspath);
+
+    /**
+     * Returns the implementation classpath of the worker, or {@code null} if it has not been set.
+     *
+     * <p>Allows code that configures a builder after its creator, such as the worker configuration action of a
+     * test framework, to add entries to the implementation classpath without replacing the existing ones.</p>
+     *
+     * @see #setImplementationClasspath(List)
+     */
+    @Nullable
+    List<URL> getImplementationClasspath();
 
     void setImplementationModulePath(List<URL> implementationModulePath);
 

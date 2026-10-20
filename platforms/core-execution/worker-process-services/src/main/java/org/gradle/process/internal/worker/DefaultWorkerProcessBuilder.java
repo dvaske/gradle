@@ -39,6 +39,7 @@ import org.gradle.process.internal.worker.child.ApplicationClassesInSystemClassL
 import org.gradle.process.internal.worker.child.WorkerJvmMemoryInfoProtocol;
 import org.gradle.process.internal.worker.child.WorkerLoggingProtocol;
 import org.gradle.util.internal.GUtil;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +71,7 @@ public class DefaultWorkerProcessBuilder implements WorkerProcessBuilder {
     private LogLevel logLevel = LogLevel.LIFECYCLE;
     private String baseName = "Gradle Worker";
     private int connectTimeoutSeconds;
-    private List<URL> implementationClassPath;
+    private @Nullable List<URL> implementationClassPath;
     private List<URL> implementationModulePath;
     private boolean shouldPublishJvmMemoryInfo;
     private NativeServicesMode nativeServicesMode = NativeServicesMode.NOT_SET;
@@ -193,6 +194,11 @@ public class DefaultWorkerProcessBuilder implements WorkerProcessBuilder {
     @Override
     public void setImplementationClasspath(List<URL> implementationClassPath) {
         this.implementationClassPath = implementationClassPath;
+    }
+
+    @Override
+    public @Nullable List<URL> getImplementationClasspath() {
+        return implementationClassPath;
     }
 
     @Override
