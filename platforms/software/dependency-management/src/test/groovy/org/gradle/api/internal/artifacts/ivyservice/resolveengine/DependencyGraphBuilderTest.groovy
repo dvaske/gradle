@@ -52,6 +52,7 @@ import org.gradle.api.internal.attributes.ImmutableAttributes
 import org.gradle.api.internal.attributes.immutable.ImmutableAttributesSchema
 import org.gradle.api.specs.Spec
 import org.gradle.internal.Describables
+import org.gradle.internal.buildoption.FeatureFlags
 import org.gradle.internal.component.external.descriptor.DefaultExclude
 import org.gradle.internal.component.external.model.DefaultModuleComponentIdentifier
 import org.gradle.internal.component.external.model.ImmutableCapabilities
@@ -134,7 +135,8 @@ class DependencyGraphBuilderTest extends Specification {
         new DefaultLocalVariantGraphResolveStateBuilder(
             new ComponentIdGenerator(),
             Mock(DependencyMetadataFactory),
-            new DefaultExcludeRuleConverter(new DefaultImmutableModuleIdentifierFactory())
+            new DefaultExcludeRuleConverter(new DefaultImmutableModuleIdentifierFactory()),
+            Stub(FeatureFlags)
         ),
         TestUtil.calculatedValueContainerFactory()
     )

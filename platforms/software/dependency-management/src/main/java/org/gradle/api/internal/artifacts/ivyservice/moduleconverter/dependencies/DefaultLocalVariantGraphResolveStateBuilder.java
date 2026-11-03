@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.artifacts.component.ComponentIdentifier;
 import org.gradle.api.attributes.Category;
+import org.gradle.api.internal.FeaturePreviews;
 import org.gradle.api.internal.artifacts.NamedVariantIdentifier;
 import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal;
 import org.gradle.api.internal.artifacts.configurations.Configurations;
@@ -36,6 +37,7 @@ import org.gradle.api.internal.attributes.ImmutableAttributesEntry;
 import org.gradle.api.internal.file.FileCollectionInternal;
 import org.gradle.internal.Describables;
 import org.gradle.internal.DisplayName;
+import org.gradle.internal.buildoption.FeatureFlags;
 import org.gradle.internal.component.external.model.ImmutableCapabilities;
 import org.gradle.internal.component.local.model.DefaultLocalVariantGraphResolveMetadata;
 import org.gradle.internal.component.local.model.DefaultLocalVariantGraphResolveState;
@@ -73,15 +75,18 @@ public class DefaultLocalVariantGraphResolveStateBuilder implements LocalVariant
     private final ComponentIdGenerator idGenerator;
     private final DependencyMetadataFactory dependencyMetadataFactory;
     private final ExcludeRuleConverter excludeRuleConverter;
+    private final FeatureFlags featureFlags;
 
     public DefaultLocalVariantGraphResolveStateBuilder(
         ComponentIdGenerator idGenerator,
         DependencyMetadataFactory dependencyMetadataFactory,
-        ExcludeRuleConverter excludeRuleConverter
+        ExcludeRuleConverter excludeRuleConverter,
+        FeatureFlags featureFlags
     ) {
         this.idGenerator = idGenerator;
         this.dependencyMetadataFactory = dependencyMetadataFactory;
         this.excludeRuleConverter = excludeRuleConverter;
+        this.featureFlags = featureFlags;
     }
 
     @Override
@@ -233,11 +238,15 @@ public class DefaultLocalVariantGraphResolveStateBuilder implements LocalVariant
             ImmutableSet.Builder<LocalFileDependencyMetadata> files = ImmutableSet.builder();
             ImmutableList.Builder<ExcludeMetadata> excludes = ImmutableList.builder();
 
-            // For historical reasons, and to maintain behavior, dependencies
-            // are ordered based on the name of the extended configurations.
-            ArrayList<Configuration> sortedHierarchy = new ArrayList<>(hierarchy);
-            sortedHierarchy.sort(Comparator.comparing(Named::getName));
-            sortedHierarchy.forEach(config -> {
+            // With enhanced graph ordering, dependencies follow the hierarchy: the configuration itself,
+            // then the configurations it extends from, in the order they were added.
+            ArrayList<Configuration> orderedHierarchy = new ArrayList<>(hierarchy);
+            if (!featureFlags.isEnabled(FeaturePreviews.Feature.ENHANCED_GRAPH_ORDERING)) {
+                // For historical reasons, and to maintain behavior, dependencies
+                // are ordered based on the name of the extended configurations.
+                orderedHierarchy.sort(Comparator.comparing(Named::getName));
+            }
+            orderedHierarchy.forEach(config -> {
                 DependencyState defined = getDefinedState((ConfigurationInternal) config, dependencyCache);
                 dependencies.addAll(defined.dependencies);
                 files.addAll(defined.files);

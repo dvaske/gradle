@@ -26,6 +26,7 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.component.ComponentIdentifier
 import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal
 import org.gradle.api.internal.attributes.ImmutableAttributes
+import org.gradle.internal.buildoption.FeatureFlags
 import org.gradle.internal.component.model.ComponentIdGenerator
 import org.gradle.internal.component.model.Exclude
 import org.gradle.internal.component.model.ExcludeMetadata
@@ -43,7 +44,8 @@ class DefaultLocalVariantGraphResolveMetadataBuilderTest extends Specification {
     def converter = new DefaultLocalVariantGraphResolveStateBuilder(
         new ComponentIdGenerator(),
         dependencyMetadataFactory,
-        excludeRuleConverter
+        excludeRuleConverter,
+        Stub(FeatureFlags)
     )
 
     def configuration = Mock(ConfigurationInternal)
